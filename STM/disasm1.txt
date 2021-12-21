@@ -1,0 +1,215 @@
+
+main.elf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+08000000 <SP>:
+ 8000000:	20005001 	andcs	r5, r0, r1
+
+08000004 <RESET>:
+ 8000004:	08000061 	stmdaeq	r0, {r0, r5, r6}
+
+08000008 <NMI_HANDLER>:
+ 8000008:	08000089 	stmdaeq	r0, {r0, r3, r7}
+
+0800000c <HARD_FAULT>:
+ 800000c:	0800008d 	stmdaeq	r0, {r0, r2, r3, r7}
+
+08000010 <MEMORY_FAULT>:
+ 8000010:	08000091 	stmdaeq	r0, {r0, r4, r7}
+
+08000014 <BUS_FAULT>:
+ 8000014:	08000095 	stmdaeq	r0, {r0, r2, r4, r7}
+
+08000018 <USAGE_FAULT>:
+ 8000018:	08000099 	stmdaeq	r0, {r0, r3, r4, r7}
+
+0800001c <gpio_port_c_rcc_init>:
+ 800001c:	b403      	push	{r0, r1}
+ 800001e:	491f      	ldr	r1, [pc, #124]	; (800009c <usage_fault+0x4>)
+ 8000020:	f04f 60a0 	mov.w	r0, #83886080	; 0x5000000
+ 8000024:	6008      	str	r0, [r1, #0]
+ 8000026:	f04f 0010 	mov.w	r0, #16
+ 800002a:	491d      	ldr	r1, [pc, #116]	; (80000a0 <usage_fault+0x8>)
+ 800002c:	6008      	str	r0, [r1, #0]
+ 800002e:	bc03      	pop	{r0, r1}
+ 8000030:	4770      	bx	lr
+
+08000032 <led_init>:
+ 8000032:	b403      	push	{r0, r1}
+ 8000034:	b500      	push	{lr}
+ 8000036:	f7ff fff1 	bl	800001c <gpio_port_c_rcc_init>
+ 800003a:	f85d eb04 	ldr.w	lr, [sp], #4
+ 800003e:	4919      	ldr	r1, [pc, #100]	; (80000a4 <usage_fault+0xc>)
+ 8000040:	6808      	ldr	r0, [r1, #0]
+ 8000042:	f420 0070 	bic.w	r0, r0, #15728640	; 0xf00000
+ 8000046:	f440 1000 	orr.w	r0, r0, #2097152	; 0x200000
+ 800004a:	6008      	str	r0, [r1, #0]
+ 800004c:	bc03      	pop	{r0, r1}
+ 800004e:	4770      	bx	lr
+
+08000050 <led_flash>:
+ 8000050:	b403      	push	{r0, r1}
+ 8000052:	4915      	ldr	r1, [pc, #84]	; (80000a8 <usage_fault+0x10>)
+ 8000054:	6808      	ldr	r0, [r1, #0]
+ 8000056:	f480 5000 	eor.w	r0, r0, #8192	; 0x2000
+ 800005a:	6008      	str	r0, [r1, #0]
+ 800005c:	bc03      	pop	{r0, r1}
+ 800005e:	4770      	bx	lr
+
+08000060 <main>:
+ 8000060:	b500      	push	{lr}
+ 8000062:	f7ff ffe6 	bl	8000032 <led_init>
+ 8000066:	f85d eb04 	ldr.w	lr, [sp], #4
+
+0800006a <_main_loop>:
+ 800006a:	b500      	push	{lr}
+ 800006c:	f7ff fff0 	bl	8000050 <led_flash>
+ 8000070:	f000 f804 	bl	800007c <wait>
+ 8000074:	f85d eb04 	ldr.w	lr, [sp], #4
+ 8000078:	e7f7      	b.n	800006a <_main_loop>
+ 800007a:	4770      	bx	lr
+
+0800007c <wait>:
+ 800007c:	b401      	push	{r0}
+ 800007e:	480b      	ldr	r0, [pc, #44]	; (80000ac <usage_fault+0x14>)
+
+08000080 <_wait_loop>:
+ 8000080:	3801      	subs	r0, #1
+ 8000082:	d1fd      	bne.n	8000080 <_wait_loop>
+ 8000084:	bc01      	pop	{r0}
+ 8000086:	4770      	bx	lr
+
+08000088 <nmi_fault>:
+ 8000088:	be00      	bkpt	0x0000
+ 800008a:	4770      	bx	lr
+
+0800008c <hard_fault>:
+ 800008c:	be00      	bkpt	0x0000
+ 800008e:	4770      	bx	lr
+
+08000090 <memory_fault>:
+ 8000090:	be00      	bkpt	0x0000
+ 8000092:	4770      	bx	lr
+
+08000094 <bus_fault>:
+ 8000094:	be00      	bkpt	0x0000
+ 8000096:	4770      	bx	lr
+
+08000098 <usage_fault>:
+ 8000098:	be00      	bkpt	0x0000
+ 800009a:	4770      	bx	lr
+ 800009c:	40021004 	andmi	r1, r2, r4
+ 80000a0:	40021018 	andmi	r1, r2, r8, lsl r0
+ 80000a4:	40011004 	andmi	r1, r1, r4
+ 80000a8:	4001100c 	andmi	r1, r1, ip
+ 80000ac:	000ffff0 	strdeq	pc, [pc], -r0
+
+Disassembly of section .ARM.attributes:
+
+00000000 <.ARM.attributes>:
+   0:	00002041 	andeq	r2, r0, r1, asr #32
+   4:	61656100 	cmnvs	r5, r0, lsl #2
+   8:	01006962 	tsteq	r0, r2, ror #18
+   c:	00000016 	andeq	r0, r0, r6, lsl r0
+  10:	726f4305 	rsbvc	r4, pc, #335544320	; 0x14000000
+  14:	2d786574 	cfldr64cs	mvdx6, [r8, #-464]!	; 0xfffffe30
+  18:	0600334d 	streq	r3, [r0], -sp, asr #6
+  1c:	094d070a 	stmdbeq	sp, {r1, r3, r8, r9, sl}^
+  20:	Address 0x0000000000000020 is out of bounds.
+
+
+Disassembly of section .debug_line:
+
+00000000 <.debug_line>:
+   0:	00000096 	muleq	r0, r6, r0
+   4:	00340003 	eorseq	r0, r4, r3
+   8:	01020000 	mrseq	r0, (UNDEF: 2)
+   c:	000d0efb 	strdeq	r0, [sp], -fp
+  10:	01010101 	tsteq	r1, r1, lsl #2
+  14:	01000000 	mrseq	r0, (UNDEF: 0)
+  18:	00010000 	andeq	r0, r1, r0
+  1c:	6f697067 	svcvs	0x00697067
+  20:	636e692e 	cmnvs	lr, #753664	; 0xb8000
+  24:	00000000 	andeq	r0, r0, r0
+  28:	2e64656c 	cdpcs	5, 6, cr6, cr4, cr12, {3}
+  2c:	00636e69 	rsbeq	r6, r3, r9, ror #28
+  30:	6d000000 	stcvs	0, cr0, [r0, #-0]
+  34:	2e6e6961 	vnmulcs.f16	s13, s28, s3	; <UNPREDICTABLE>
+  38:	00000073 	andeq	r0, r0, r3, ror r0
+  3c:	05000000 	streq	r0, [r0, #-0]
+  40:	00001c02 	andeq	r1, r0, r2, lsl #24
+  44:	01090308 	tsteq	r9, r8, lsl #6
+  48:	23322122 	teqcs	r2, #-2147483640	; 0x80000008
+  4c:	21222130 			; <UNDEFINED> instruction: 0x21222130
+  50:	73030204 	movwvc	r0, #12804	; 0x3204
+  54:	2f212220 	svccs	0x00212220
+  58:	32242131 	eorcc	r2, r4, #1073741836	; 0x4000000c
+  5c:	24222233 	strtcs	r2, [r2], #-563	; 0xfffffdcd
+  60:	32242123 	eorcc	r2, r4, #-1073741816	; 0xc0000008
+  64:	03042222 	movweq	r2, #16930	; 0x4222
+  68:	21206703 			; <UNDEFINED> instruction: 0x21206703
+  6c:	2f21312f 	svccs	0x0021312f
+  70:	24222f2f 	strtcs	r2, [r2], #-3887	; 0xfffff0d1
+  74:	22212222 	eorcs	r2, r1, #536870914	; 0x20000002
+  78:	24212421 	strtcs	r2, [r1], #-1057	; 0xfffffbdf
+  7c:	24212421 	strtcs	r2, [r1], #-1057	; 0xfffffbdf
+  80:	04212421 	strteq	r2, [r1], #-1057	; 0xfffffbdf
+  84:	7fbb0301 	svcvc	0x00bb0301
+  88:	2e0a0320 	cdpcs	3, 0, cr0, cr10, cr0, {1}
+  8c:	032c0204 			; <UNDEFINED> instruction: 0x032c0204
+  90:	03042e19 	movweq	r2, #19993	; 0x4e19
+  94:	00020233 	andeq	r0, r2, r3, lsr r2
+  98:	Address 0x0000000000000098 is out of bounds.
+
+
+Disassembly of section .debug_info:
+
+00000000 <.debug_info>:
+   0:	00000022 	andeq	r0, r0, r2, lsr #32
+   4:	00000002 	andeq	r0, r0, r2
+   8:	01040000 	mrseq	r0, (UNDEF: 4)
+   c:	00000000 	andeq	r0, r0, r0
+  10:	08000000 	stmdaeq	r0, {}	; <UNPREDICTABLE>
+  14:	080000b0 	stmdaeq	r0, {r4, r5, r7}
+  18:	00000000 	andeq	r0, r0, r0
+  1c:	00000009 	andeq	r0, r0, r9
+  20:	0000001d 	andeq	r0, r0, sp, lsl r0
+  24:	Address 0x0000000000000024 is out of bounds.
+
+
+Disassembly of section .debug_abbrev:
+
+00000000 <.debug_abbrev>:
+   0:	10001101 	andne	r1, r0, r1, lsl #2
+   4:	12011106 	andne	r1, r1, #-2147483647	; 0x80000001
+   8:	1b0e0301 	blne	380c14 <GPIO_DEF+0x380c14>
+   c:	130e250e 	movwne	r2, #58638	; 0xe50e
+  10:	00000005 	andeq	r0, r0, r5
+
+Disassembly of section .debug_aranges:
+
+00000000 <.debug_aranges>:
+   0:	0000001c 	andeq	r0, r0, ip, lsl r0
+   4:	00000002 	andeq	r0, r0, r2
+   8:	00040000 	andeq	r0, r4, r0
+   c:	00000000 	andeq	r0, r0, r0
+  10:	08000000 	stmdaeq	r0, {}	; <UNPREDICTABLE>
+  14:	000000b0 	strheq	r0, [r0], -r0	; <UNPREDICTABLE>
+	...
+
+Disassembly of section .debug_str:
+
+00000000 <.debug_str>:
+   0:	6f697067 	svcvs	0x00697067
+   4:	636e692e 	cmnvs	lr, #753664	; 0xb8000
+   8:	6f682f00 	svcvs	0x00682f00
+   c:	612f656d 			; <UNDEFINED> instruction: 0x612f656d
+  10:	6d657472 	cfstrdvs	mvd7, [r5, #-456]!	; 0xfffffe38
+  14:	4d54532f 	ldclmi	3, cr5, [r4, #-188]	; 0xffffff44
+  18:	312f3233 			; <UNDEFINED> instruction: 0x312f3233
+  1c:	554e4700 	strbpl	r4, [lr, #-1792]	; 0xfffff900
+  20:	20534120 	subscs	r4, r3, r0, lsr #2
+  24:	34332e32 	ldrtcc	r2, [r3], #-3634	; 0xfffff1ce
+	...

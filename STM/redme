@@ -1,0 +1,4 @@
+arm-none-eabi-as -c -g -mcpu=cortex-m3 main.s -o main.o
+arm-none-eabi-gcc -mcpu=cortex-m3 ./main.o -T stm32f103c8t6_link_map.ld -nostartfiles -o./main.elf
+arm-none-eabi-objcopy -O binary ./main.elf main.bin
+arm-none-eabi-objdump -D main.elf > disasm.txt
